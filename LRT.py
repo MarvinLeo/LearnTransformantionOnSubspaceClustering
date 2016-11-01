@@ -19,4 +19,24 @@ def subgradient_matrix(A, theta=1):
     B = B/linalg.norm(B)   #normalize B
     patial_A = np.dot(u1, v1.transpose()) + np.dot(np.dot(u2,B), v2.transpose())     
     return patial_A
+
+def concave_convex_procedure(n, Yc, Y, iter = 4, step = 0.1):  
+    T0 = np.identity(n)      #set T0 with identity matrix
+    T = T0
+    output = np.zeros(T.shape)
+    for i in range(iter):    #repeat the update
+        for j in range(len(Yc)):
+            ## comput the subgraient of first term
+            temp = np.dot(T,Yc[j])
+            temp = subgradient_matrix(temp)
+            temp = np.dot(temp, Yc[j].transpose())
+            output += temp
+        temp2 = np.dot(T, Y) 
+        temp2 = subgradient_matrix(temp2)
+        temp2 = np.dot(temp2, Y.transpose())
+        output -= temp2
+        T = T - step * output
+        T = T/linalg.norm(T)
+            #temp = np.linalg.norm(temp, ord = 'nuc')
+    return T
     
